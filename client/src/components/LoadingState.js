@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const loadingMessages = [
-  "Understanding your emotions...",
-  "Finding content that resonates...",
-  "Curating posts just for you...",
-  "Connecting you with relevant stories...",
-  "Reading between the lines...",
-  "Matching your feelings to posts...",
+  "Researching your topic...",
+  "Crafting engaging posts...",
+  "Tailoring for each platform...",
+  "Finding the perfect images...",
+  "Adding the finishing touches...",
+  "Almost ready to share...",
 ];
 
 function LoadingState() {
