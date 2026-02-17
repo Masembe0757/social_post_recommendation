@@ -12,6 +12,9 @@ const { attachImagesToPosts } = require("./imageSearch");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for rate limiter behind reverse proxies / dev servers
+app.set("trust proxy", 1);
+
 // Security middleware
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
@@ -21,6 +24,8 @@ app.use(express.json({ limit: "10kb" }));
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: {
     success: false,
     message: "Too many requests. Please wait a moment before trying again.",
@@ -118,9 +123,15 @@ app.get("/api/crisis-resources", (_req, res) => {
   res.json({ success: true, resources: getCrisisResources() });
 });
 
-// Catch-all: serve React app for client-side routing
+// Catch-all: serve React app for client-side routing (production only)
+const indexPath = path.join(__dirname, "../client/build", "index.html");
 app.get("/{*splat}", (_req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  const fs = require("fs");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ message: "Not found. In development, use the React dev server." });
+  }
 });
 
 app.listen(PORT, () => {
