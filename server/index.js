@@ -11,6 +11,7 @@ const {
   getRandomPosts,
   getCrisisResources,
 } = require("./recommendationEngine");
+const { attachImagesToPost } = require("./imageSearch");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -76,7 +77,10 @@ app.post("/api/analyze-emotion", async (req, res) => {
       });
     }
 
-    const posts = recommendPosts(emotionAnalysis);
+    let posts = recommendPosts(emotionAnalysis);
+
+    // Attach suggested images (graceful fallback if unavailable)
+    posts = await attachImagesToPost(posts, emotionAnalysis.primary_emotion);
 
     res.json({
       success: true,
@@ -96,7 +100,7 @@ app.post("/api/analyze-emotion", async (req, res) => {
 });
 
 // Get recommendations by emotion (direct query)
-app.get("/api/recommend-posts", (req, res) => {
+app.get("/api/recommend-posts", async (req, res) => {
   try {
     const { emotion, intensity } = req.query;
 
@@ -115,7 +119,8 @@ app.get("/api/recommend-posts", (req, res) => {
       suggested_content_tone: [],
     };
 
-    const posts = recommendPosts(emotionAnalysis);
+    let posts = recommendPosts(emotionAnalysis);
+    posts = await attachImagesToPost(posts, emotionAnalysis.primary_emotion);
 
     res.json({ success: true, posts });
   } catch (error) {
