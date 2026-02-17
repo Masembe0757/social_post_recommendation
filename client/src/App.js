@@ -3,9 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import EmotionInput from "./components/EmotionInput";
 import LoadingState from "./components/LoadingState";
-import EmotionResult from "./components/EmotionResult";
 import PostList from "./components/PostList";
-import CrisisResources from "./components/CrisisResources";
 import Footer from "./components/Footer";
 
 const API_BASE = process.env.REACT_APP_API_URL || "";
@@ -16,13 +14,13 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const analyzeEmotion = useCallback(async (text) => {
+  const generatePosts = useCallback(async (text) => {
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/analyze-emotion`, {
+      const res = await fetch(`${API_BASE}/api/generate-posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
@@ -32,8 +30,12 @@ function App() {
 
       if (!res.ok || !data.success) {
         setError(data.message || "Something went wrong. Please try again.");
-        if (data.fallback_posts) {
-          setResult({ posts: data.fallback_posts, emotion: null, crisis_mode: false });
+        if (data.posts) {
+          setResult({
+            posts: data.posts,
+            topic_summary: data.topic_summary,
+            generated: data.generated ?? false,
+          });
         }
         return;
       }
@@ -61,7 +63,7 @@ function App() {
             {!loading && !result && (
               <EmotionInput
                 key="input"
-                onSubmit={analyzeEmotion}
+                onSubmit={generatePosts}
                 error={error}
               />
             )}
@@ -70,25 +72,17 @@ function App() {
 
             {!loading && result && (
               <div key="results">
-                {result.crisis_mode ? (
-                  <CrisisResources
-                    resources={result.resources}
-                    onBack={handleReset}
-                  />
-                ) : (
-                  <>
-                    {result.emotion && (
-                      <EmotionResult emotion={result.emotion} />
-                    )}
-                    <PostList posts={result.posts} />
-                  </>
-                )}
+                <PostList
+                  posts={result.posts}
+                  topicSummary={result.topic_summary}
+                  generated={result.generated}
+                />
 
                 <button
                   onClick={handleReset}
                   className="mt-8 mx-auto block px-6 py-3 rounded-xl text-indigo-600 dark:text-indigo-400 border-2 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors font-medium cursor-pointer"
                 >
-                  Analyze Another Feeling
+                  Create Another Post
                 </button>
               </div>
             )}
