@@ -56,14 +56,33 @@ Guidelines:
 
   const result = await model.generateContent(prompt);
   const response = result.response;
-  const text = response.text();
+  let text = response.text();
 
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
+  // Strip markdown code fences if present
+  text = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "");
+
+  // Extract the outermost JSON object by matching balanced braces
+  let depth = 0;
+  let start = -1;
+  let end = -1;
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === "{") {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (text[i] === "}") {
+      depth--;
+      if (depth === 0) {
+        end = i + 1;
+        break;
+      }
+    }
+  }
+
+  if (start === -1 || end === -1) {
     throw new Error("Failed to parse generated posts from Gemini response");
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  const parsed = JSON.parse(text.slice(start, end));
 
   if (!parsed.posts || !Array.isArray(parsed.posts) || parsed.posts.length === 0) {
     throw new Error("Gemini returned no posts");
