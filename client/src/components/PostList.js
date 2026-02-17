@@ -61,6 +61,38 @@ function PostCard({ post, index }) {
         )}
       </div>
 
+      {/* Suggested Image */}
+      {post.suggestedImage && (
+        <div className="mb-3 -mx-5 -mt-2">
+          <img
+            src={post.suggestedImage.thumbUrl}
+            alt={post.suggestedImage.alt}
+            className="w-full h-48 object-cover"
+            loading="lazy"
+          />
+          <div className="px-5 pt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
+            <span>Photo by</span>
+            <a
+              href={post.suggestedImage.photographerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-slate-600 dark:hover:text-slate-300"
+            >
+              {post.suggestedImage.photographer}
+            </a>
+            <span>on</span>
+            <a
+              href={post.suggestedImage.unsplashUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-slate-600 dark:hover:text-slate-300"
+            >
+              Unsplash
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <p className="text-slate-700 dark:text-slate-200 leading-relaxed mb-3 text-[15px]">
         {post.content}
