@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const moodEmojis = [
-  { emoji: "\uD83D\uDE0A", label: "Happy", text: "I'm feeling happy and good today" },
-  { emoji: "\uD83D\uDE22", label: "Sad", text: "I'm feeling sad and down" },
-  { emoji: "\uD83D\uDE1F", label: "Anxious", text: "I'm feeling anxious and worried" },
-  { emoji: "\uD83D\uDE21", label: "Angry", text: "I'm feeling frustrated and angry" },
-  { emoji: "\uD83D\uDE34", label: "Tired", text: "I'm feeling exhausted and overwhelmed" },
-  { emoji: "\uD83E\uDD14", label: "Confused", text: "I'm feeling lost and confused" },
-  { emoji: "\uD83D\uDE0C", label: "Calm", text: "I'm feeling peaceful and calm" },
-  { emoji: "\uD83C\uDF1F", label: "Excited", text: "I'm feeling excited and motivated" },
+const topicSuggestions = [
+  { emoji: "\uD83C\uDFAC", label: "Movies", text: "I want to post about trending movies" },
+  { emoji: "\uD83D\uDCBB", label: "Tech", text: "I want to post about the latest in tech" },
+  { emoji: "\uD83C\uDFCB\uFE0F", label: "Fitness", text: "I want to post a fitness motivation update" },
+  { emoji: "\uD83C\uDF73", label: "Food", text: "I want to post about a delicious recipe" },
+  { emoji: "\u2708\uFE0F", label: "Travel", text: "I want to post about travel destinations" },
+  { emoji: "\uD83D\uDCDA", label: "Books", text: "I want to post a book recommendation" },
+  { emoji: "\uD83C\uDFB5", label: "Music", text: "I want to post about trending music" },
+  { emoji: "\uD83D\uDCA1", label: "Tips", text: "I want to share a useful life hack or tip" },
 ];
 
 function EmotionInput({ onSubmit, error }) {
@@ -23,8 +23,8 @@ function EmotionInput({ onSubmit, error }) {
     }
   };
 
-  const handleEmojiClick = (moodText) => {
-    setText(moodText);
+  const handleTopicClick = (topicText) => {
+    setText(topicText);
   };
 
   return (
@@ -42,7 +42,7 @@ function EmotionInput({ onSubmit, error }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          How are you feeling?
+          What do you want to post about?
         </motion.h2>
         <motion.p
           className="text-slate-500 dark:text-slate-400 text-lg"
@@ -50,21 +50,21 @@ function EmotionInput({ onSubmit, error }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Share what's on your mind, and we'll find posts that resonate with you.
+          Describe your idea and we'll craft ready-to-share posts with images.
         </motion.p>
       </div>
 
-      {/* Quick mood selectors */}
+      {/* Quick topic selectors */}
       <motion.div
         className="flex flex-wrap justify-center gap-2 mb-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        {moodEmojis.map(({ emoji, label, text: moodText }) => (
+        {topicSuggestions.map(({ emoji, label, text: topicText }) => (
           <button
             key={label}
-            onClick={() => handleEmojiClick(moodText)}
+            onClick={() => handleTopicClick(topicText)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all text-sm cursor-pointer"
             title={label}
           >
@@ -85,7 +85,7 @@ function EmotionInput({ onSubmit, error }) {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="How are you feeling today? Share what's on your mind..."
+          placeholder="e.g. I want to post about trending movies this week, healthy meal prep ideas, my gym progress..."
           className="w-full min-h-[200px] p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 resize-y focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all text-base leading-relaxed"
           maxLength={2000}
         />
@@ -105,7 +105,7 @@ function EmotionInput({ onSubmit, error }) {
             </span>
             {charCount > 0 && charCount < 10 && (
               <span className="text-xs text-slate-400 dark:text-slate-500">
-                A bit more detail helps us understand you better
+                Add more detail for better results
               </span>
             )}
           </div>
@@ -115,7 +115,7 @@ function EmotionInput({ onSubmit, error }) {
             disabled={text.trim().length < 2}
             className="px-6 py-3 rounded-xl font-semibold text-white emotion-gradient hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg cursor-pointer"
           >
-            Find Posts for Me
+            Generate Posts
           </button>
         </div>
 
@@ -130,7 +130,7 @@ function EmotionInput({ onSubmit, error }) {
         )}
 
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 text-center">
-          Your feelings are private and not stored permanently. This is a supportive tool, not a replacement for professional mental health care.
+          Posts are generated by AI. Review and personalize before sharing.
         </p>
       </motion.form>
     </motion.div>
