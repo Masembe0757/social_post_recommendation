@@ -5,13 +5,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
-const { analyzeEmotion } = require("./emotionAnalyzer");
-const {
-  recommendPosts,
-  getRandomPosts,
-  getCrisisResources,
-} = require("./recommendationEngine");
-const { attachImagesToPost } = require("./imageSearch");
+const { generatePosts } = require("./postGenerator");
+const { getRandomPosts, getCrisisResources } = require("./recommendationEngine");
+const { attachImagesToPosts } = require("./imageSearch");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -37,15 +33,15 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 
 // --- API Routes ---
 
-// Analyze emotion and return recommendations
-app.post("/api/analyze-emotion", async (req, res) => {
+// Generate social media posts based on user input
+app.post("/api/generate-posts", async (req, res) => {
   try {
     const { text } = req.body;
 
     if (!text || typeof text !== "string") {
       return res.status(400).json({
         success: false,
-        message: "Please provide some text to analyze.",
+        message: "Please describe what you'd like to post about.",
       });
     }
 
@@ -53,7 +49,7 @@ app.post("/api/analyze-emotion", async (req, res) => {
     if (trimmed.length < 2) {
       return res.status(400).json({
         success: false,
-        message: "Please write a bit more so we can understand how you feel.",
+        message: "Please provide a bit more detail about your post idea.",
       });
     }
 
@@ -64,72 +60,40 @@ app.post("/api/analyze-emotion", async (req, res) => {
       });
     }
 
-    const emotionAnalysis = await analyzeEmotion(trimmed);
+    // Primary: Generate posts with Gemini
+    const result = await generatePosts(trimmed);
 
-    // Crisis detection - return resources immediately
-    if (emotionAnalysis.crisis_indicators) {
-      return res.json({
-        success: true,
-        crisis_mode: true,
-        emotion: emotionAnalysis,
-        resources: getCrisisResources(),
-        posts: [],
-      });
-    }
-
-    let posts = recommendPosts(emotionAnalysis);
-
-    // Attach suggested images (graceful fallback if unavailable)
-    posts = await attachImagesToPost(posts, emotionAnalysis.primary_emotion);
+    // Attach images based on each post's content/keywords
+    const postsWithImages = await attachImagesToPosts(result.posts);
 
     res.json({
       success: true,
-      crisis_mode: false,
-      emotion: emotionAnalysis,
-      posts,
+      topic_summary: result.topic_summary,
+      posts: postsWithImages,
+      generated: true,
     });
   } catch (error) {
-    console.error("Analysis failed:", error.message);
-    res.status(500).json({
-      success: false,
-      message:
-        "We're having trouble analyzing emotions right now. Please try again.",
-      fallback_posts: getRandomPosts(5),
-    });
-  }
-});
+    console.error("Post generation failed:", error.message);
 
-// Get recommendations by emotion (direct query)
-app.get("/api/recommend-posts", async (req, res) => {
-  try {
-    const { emotion, intensity } = req.query;
-
-    if (!emotion) {
-      return res.status(400).json({
+    // Fallback: serve static posts when Gemini fails
+    try {
+      const fallbackPosts = getRandomPosts(5);
+      const postsWithImages = await attachImagesToPosts(fallbackPosts);
+      res.json({
+        success: true,
+        topic_summary: "Here are some curated post ideas for inspiration",
+        posts: postsWithImages,
+        generated: false,
+      });
+    } catch (fallbackError) {
+      res.status(500).json({
         success: false,
-        message: "Please provide an emotion parameter.",
+        message:
+          "We're having trouble generating posts right now. Please try again.",
+        posts: getRandomPosts(5),
+        generated: false,
       });
     }
-
-    const emotionAnalysis = {
-      primary_emotion: emotion.toLowerCase(),
-      secondary_emotions: [],
-      intensity: Number(intensity) || 50,
-      sentiment: "neutral",
-      suggested_content_tone: [],
-    };
-
-    let posts = recommendPosts(emotionAnalysis);
-    posts = await attachImagesToPost(posts, emotionAnalysis.primary_emotion);
-
-    res.json({ success: true, posts });
-  } catch (error) {
-    console.error("Recommendation failed:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get recommendations.",
-      fallback_posts: getRandomPosts(5),
-    });
   }
 });
 
@@ -144,7 +108,6 @@ app.post("/api/feedback", (req, res) => {
     });
   }
 
-  // In production, this would persist to a database
   console.log(`Feedback: post=${postId}, helpful=${helpful}`);
 
   res.json({ success: true });
