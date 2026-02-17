@@ -12,7 +12,7 @@ const topicSuggestions = [
   { emoji: "\uD83D\uDCA1", label: "Tips", text: "I want to share a useful life hack or tip" },
 ];
 
-function EmotionInput({ onSubmit, error }) {
+function ContentInput({ onSubmit, error }) {
   const [text, setText] = useState("");
   const charCount = text.length;
 
@@ -113,7 +113,7 @@ function EmotionInput({ onSubmit, error }) {
           <button
             type="submit"
             disabled={text.trim().length < 2}
-            className="px-6 py-3 rounded-xl font-semibold text-white emotion-gradient hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg cursor-pointer"
+            className="px-6 py-3 rounded-xl font-semibold text-white brand-gradient hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg cursor-pointer"
           >
             Generate Posts
           </button>
@@ -137,4 +137,4 @@ function EmotionInput({ onSubmit, error }) {
   );
 }
 
-export default EmotionInput;
+export default ContentInput;
