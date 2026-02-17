@@ -1,28 +1,28 @@
 const UNSPLASH_BASE_URL = "https://api.unsplash.com";
 
-// Map emotions to curated search terms for better image results
+// Map emotions to social-media-ready image search terms (content to post)
 const emotionSearchTerms = {
-  joy: ["happy people sunshine", "celebration joy", "smiling laughter"],
-  sadness: ["rain melancholy", "solitude reflection", "quiet contemplation"],
-  anger: ["storm intense", "fire energy", "bold dramatic"],
-  fear: ["dark shadows", "fog mystery", "uncertain path"],
-  anxiety: ["calm breathing", "peaceful nature", "serene landscape"],
-  calm: ["peaceful lake", "zen nature", "tranquil sunset"],
-  hope: ["sunrise new beginning", "light through clouds", "spring bloom"],
-  gratitude: ["warm golden light", "nature beauty", "hands heart"],
-  excitement: ["vibrant colors energy", "adventure travel", "festival celebration"],
-  contentment: ["cozy peaceful", "gentle nature", "warm comfort"],
-  pride: ["mountain summit", "achievement success", "golden confidence"],
-  motivation: ["running determination", "climb overcome", "road ahead journey"],
-  loneliness: ["connection togetherness", "community warmth", "friendship bond"],
-  shame: ["gentle light healing", "new day hope", "nature renewal"],
-  stress: ["ocean waves calm", "forest peaceful", "meditation zen"],
-  overwhelm: ["simple minimal", "clear sky space", "calm water"],
-  disgust: ["fresh clean nature", "pure water clarity", "bright flowers"],
-  confusion: ["clear path direction", "lighthouse guidance", "compass journey"],
-  boredom: ["colorful adventure", "explore discover", "creative inspiration"],
-  frustration: ["breakthrough perseverance", "open road freedom", "waterfall release"],
-  disappointment: ["silver lining clouds", "rainbow after rain", "seeds growth"],
+  joy: ["friends celebrating together", "lifestyle happy aesthetic", "good vibes summer"],
+  sadness: ["cozy rainy day aesthetic", "journaling coffee window", "reflective portrait"],
+  anger: ["powerful workout fitness", "bold street art graffiti", "intense sports action"],
+  fear: ["overcoming challenge courage", "adventure bravery heights", "dark aesthetic moody"],
+  anxiety: ["self care routine aesthetic", "yoga meditation mindfulness", "calm workspace minimal"],
+  calm: ["sunset beach peaceful", "morning coffee routine", "cozy reading nook"],
+  hope: ["sunrise golden hour portrait", "planting seeds garden", "open road travel"],
+  gratitude: ["friends gathering dinner table", "handwritten letter aesthetic", "nature thankful outdoors"],
+  excitement: ["travel adventure explore", "concert festival crowd", "new experience thrill"],
+  contentment: ["cozy home aesthetic", "simple pleasures lifestyle", "slow living comfort"],
+  pride: ["graduation achievement celebrate", "fitness transformation progress", "creative work showcase"],
+  motivation: ["gym workout progress", "desk hustle productivity", "running trail fitness"],
+  loneliness: ["coffee shop people watching", "pet companion cozy", "community gathering social"],
+  shame: ["fresh start morning routine", "growth mindset journal", "nature walk healing"],
+  stress: ["beach vacation relaxation", "spa self care day", "nature hike escape"],
+  overwhelm: ["minimalist aesthetic clean", "organized workspace desk", "simple nature calm"],
+  disgust: ["fresh healthy food aesthetic", "clean modern lifestyle", "bright floral arrangement"],
+  confusion: ["planning journal organized", "map travel direction", "brainstorm creative ideas"],
+  boredom: ["creative hobby art studio", "urban exploration photography", "cooking recipe aesthetic"],
+  frustration: ["boxing workout release", "hiking mountain summit", "skateboarding street style"],
+  disappointment: ["new beginning fresh start", "sunrise hope morning", "growth plant nature"],
 };
 
 // In-memory cache: emotion -> { images, timestamp }
@@ -34,7 +34,7 @@ function getAccessKey() {
 }
 
 /**
- * Search Unsplash for images matching an emotion/tone combination.
+ * Search Unsplash for social-media-ready images to pair with a post.
  * Returns an array of image objects with url, alt, and photographer credit.
  */
 async function searchImages(emotion, count = 8) {
@@ -50,7 +50,7 @@ async function searchImages(emotion, count = 8) {
   }
 
   // Pick a search query from the emotion map
-  const terms = emotionSearchTerms[emotion] || [`${emotion} mood atmosphere`];
+  const terms = emotionSearchTerms[emotion] || [`${emotion} aesthetic social media`];
   const query = terms[Math.floor(Math.random() * terms.length)];
 
   try {
@@ -76,7 +76,7 @@ async function searchImages(emotion, count = 8) {
     const images = data.results.map((photo) => ({
       url: photo.urls.regular,
       thumbUrl: photo.urls.small,
-      alt: photo.alt_description || `${emotion} mood image`,
+      alt: photo.alt_description || `Suggested image for ${emotion} post`,
       photographer: photo.user.name,
       photographerUrl: `${photo.user.links.html}?utm_source=social_post_recommender&utm_medium=referral`,
       unsplashUrl: `${photo.links.html}?utm_source=social_post_recommender&utm_medium=referral`,
@@ -93,7 +93,7 @@ async function searchImages(emotion, count = 8) {
 }
 
 /**
- * Attach an image suggestion to each post based on its emotion.
+ * Attach a suggested image to each recommended post for the user to post with.
  * Gracefully returns posts unchanged if images are unavailable.
  */
 async function attachImagesToPost(posts, primaryEmotion) {
