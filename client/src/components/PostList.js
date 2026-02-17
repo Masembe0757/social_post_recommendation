@@ -61,16 +61,27 @@ function PostCard({ post, index }) {
         )}
       </div>
 
-      {/* Suggested Image */}
+      {/* Suggested Image to Post */}
       {post.suggestedImage && (
-        <div className="mb-3 -mx-5 -mt-2">
-          <img
-            src={post.suggestedImage.thumbUrl}
-            alt={post.suggestedImage.alt}
-            className="w-full h-48 object-cover"
-            loading="lazy"
-          />
-          <div className="px-5 pt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
+        <div className="mb-3">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
+            Suggested image to attach:
+          </p>
+          <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+            <a
+              href={post.suggestedImage.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={post.suggestedImage.thumbUrl}
+                alt={post.suggestedImage.alt}
+                className="w-full h-48 object-cover hover:opacity-90 transition-opacity"
+                loading="lazy"
+              />
+            </a>
+          </div>
+          <div className="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
             <span>Photo by</span>
             <a
               href={post.suggestedImage.photographerUrl}
@@ -159,8 +170,8 @@ function PostList({ posts }) {
   if (!posts || posts.length === 0) {
     return (
       <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-        <p className="text-lg">No posts found matching your mood.</p>
-        <p className="text-sm mt-2">Try describing your feelings in more detail.</p>
+        <p className="text-lg">No post suggestions found.</p>
+        <p className="text-sm mt-2">Try describing what you'd like to post about in more detail.</p>
       </div>
     );
   }
@@ -168,7 +179,7 @@ function PostList({ posts }) {
   return (
     <div>
       <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">
-        Posts that match your mood
+        Recommended posts for you to share
       </h3>
       <div className="grid gap-4">
         {posts.map((post, index) => (
