@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
-import EmotionInput from "./components/EmotionInput";
+import ContentInput from "./components/ContentInput";
 import LoadingState from "./components/LoadingState";
 import PostList from "./components/PostList";
 import Footer from "./components/Footer";
@@ -61,7 +61,7 @@ function App() {
         <main className="max-w-3xl mx-auto px-4 py-8">
           <AnimatePresence mode="wait">
             {!loading && !result && (
-              <EmotionInput
+              <ContentInput
                 key="input"
                 onSubmit={generatePosts}
                 error={error}
