@@ -1,7 +1,7 @@
 {
   "name": "social_post_recommendation",
   "version": "1.0.0",
-  "description": "Emotion-based social post recommendation system powered by Google Gemini",
+  "description": "AI-powered social media content creator powered by Google Gemini",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -12,10 +12,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "emotion",
-    "recommendation",
+    "social-media",
+    "content-creator",
     "gemini",
-    "ai"
+    "ai",
+    "postcraft"
   ],
   "author": "",
   "license": "ISC",
